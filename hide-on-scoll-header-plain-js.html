@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Hide-on-Scroll Header (ESM)</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+                background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+                min-height: 200vh;
+                color: #333;
+                line-height: 1.6;
+                padding-top: 80px;
+            }
+
+            .header {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                background: linear-gradient(135deg, #1a2980 0%, #26d0ce 100%);
+                color: white;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+                transform: translateY(0);
+                transition: transform 0.4s ease;
+                z-index: 1000;
+            }
+
+            .header--hidden {
+                transform: translateY(-100%);
+            }
+
+            .header-container {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 0 20px;
+                height: 80px;
+            }
+
+            .logo {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+                font-size: 1.8rem;
+                font-weight: 700;
+                text-decoration: none;
+                color: white;
+            }
+
+            .logo-icon {
+                width: 40px;
+                height: 40px;
+                background: white;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #1a2980;
+                font-weight: bold;
+                font-size: 1.4rem;
+            }
+
+            .nav-links {
+                display: flex;
+                gap: 30px;
+                list-style: none;
+                margin: 0;
+                padding: 0;
+            }
+
+            .nav-links a {
+                color: rgba(255, 255, 255, 0.9);
+                text-decoration: none;
+                font-weight: 500;
+                font-size: 1.1rem;
+                padding: 5px 0;
+                position: relative;
+                transition: color 0.3s;
+            }
+
+            .nav-links a:hover {
+                color: white;
+            }
+
+            .nav-links a::after {
+                content: "";
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 0;
+                height: 2px;
+                background: white;
+                transition: width 0.3s ease;
+            }
+
+            .nav-links a:hover::after {
+                width: 100%;
+            }
+
+            .actions {
+                display: flex;
+                gap: 15px;
+            }
+
+            .btn {
+                padding: 10px 20px;
+                border-radius: 30px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                border: none;
+                font-size: 1rem;
+            }
+
+            .btn-login {
+                background: transparent;
+                color: white;
+                border: 2px solid rgba(255, 255, 255, 0.5);
+            }
+
+            .btn-login:hover {
+                background: rgba(255, 255, 255, 0.1);
+                border-color: white;
+            }
+
+            .btn-signup {
+                background: white;
+                color: #1a2980;
+            }
+
+            .btn-signup:hover {
+                background: #f5f5f5;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            }
+
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 40px 20px;
+            }
+
+            .content {
+                background: white;
+                border-radius: 12px;
+                padding: 40px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+                margin-top: 30px;
+            }
+
+            h1 {
+                color: #2c3e50;
+                text-align: center;
+                margin-bottom: 30px;
+                font-weight: 600;
+            }
+
+            h2 {
+                color: #1a2980;
+                margin: 30px 0 20px;
+                font-weight: 600;
+            }
+
+            p {
+                margin-bottom: 15px;
+                font-size: 1.1rem;
+            }
+
+            .explanation {
+                background: #e3f2fd;
+                padding: 25px;
+                border-radius: 10px;
+                margin: 40px 0;
+                border-left: 4px solid #2196f3;
+            }
+
+            .explanation h3 {
+                margin-top: 0;
+                color: #0d47a1;
+            }
+
+            .code-block {
+                background: #2d2d2d;
+                color: #f8f8f2;
+                padding: 20px;
+                border-radius: 8px;
+                font-family: "Consolas", monospace;
+                overflow-x: auto;
+                margin: 25px 0;
+                font-size: 14px;
+                line-height: 1.5;
+            }
+
+            .highlight {
+                background: #fff9c4;
+                padding: 2px 5px;
+                border-radius: 3px;
+                color: #333;
+            }
+
+            .scroll-indicator {
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(0, 0, 0, 0.7);
+                color: white;
+                padding: 10px 20px;
+                border-radius: 30px;
+                font-size: 14px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            @media (max-width: 768px) {
+                .nav-links {
+                    display: none;
+                }
+
+                .header-container {
+                    height: 70px;
+                }
+
+                .logo span {
+                    display: none;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <header class="header" id="main-header">
+            <div class="header-container">
+                <a href="#" class="logo">
+                    <div class="logo-icon">H</div>
+                    <span>HideOnScroll</span>
+                </a>
+
+                <ul class="nav-links">
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Features</a></li>
+                    <li><a href="#">Solutions</a></li>
+                    <li><a href="#">Pricing</a></li>
+                    <li><a href="#">About</a></li>
+                </ul>
+
+                <div class="actions">
+                    <button class="btn btn-login">Log In</button>
+                    <button class="btn btn-signup">Sign Up</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="container">
+            <h1>Vanilla JS Hide-on-Scroll Header (ESM)</h1>
+
+            <div class="explanation">
+                <h3>ESM Implementation</h3>
+                <p>
+                    This implementation uses JavaScript modules (ESM) to
+                    encapsulate the hide-on-scroll functionality:
+                </p>
+                <ul>
+                    <li>Cleaner code organization</li>
+                    <li>Module-scoped variables</li>
+                    <li>Better separation of concerns</li>
+                    <li>Modern JavaScript standards</li>
+                </ul>
+                <p>
+                    Scroll down to see the header disappear, then scroll up to
+                    make it reappear!
+                </p>
+            </div>
+
+            <div class="content">
+                <h2>JavaScript Module</h2>
+                <p>
+                    The core functionality is implemented in a separate module:
+                </p>
+
+                <div class="code-block">
+                    // hideOnScroll.js (ESM Module) const initHideOnScroll = ()
+                    => { const header = document.getElementById('main-header');
+                    if (!header) return; let lastScrollY = window.scrollY; const
+                    scrollThreshold = 10; const handleScroll = () => { const
+                    currentScrollY = window.scrollY; // At top of page - always
+                    show header if (currentScrollY <= 0) {
+                    header.classList.remove('header--hidden'); lastScrollY =
+                    currentScrollY; return; } // Determine scroll direction
+                    const scrollingDown = currentScrollY > lastScrollY; // When
+                    scrolling down past threshold - hide header if
+                    (scrollingDown && currentScrollY > scrollThreshold) {
+                    header.classList.add('header--hidden'); } // When scrolling
+                    up - show header else if (!scrollingDown) {
+                    header.classList.remove('header--hidden'); } // Update last
+                    scroll position lastScrollY = currentScrollY; };
+                    window.addEventListener('scroll', handleScroll, { passive:
+                    true }); // Cleanup function return () => {
+                    window.removeEventListener('scroll', handleScroll); }; };
+                    export default initHideOnScroll;
+                </div>
+
+                <h2>Main Script</h2>
+                <p>The main script imports and initializes the module:</p>
+
+                <div class="code-block">
+                    // main.js (ESM entry point) import initHideOnScroll from
+                    './hideOnScroll.js';
+                    document.addEventListener('DOMContentLoaded', () => { const
+                    cleanup = initHideOnScroll(); // Optional: Clean up event
+                    listeners when needed //
+                    window.addEventListener('beforeunload', cleanup); });
+                </div>
+
+                <h2>ESM Advantages</h2>
+                <p>Using ESM provides several benefits:</p>
+
+                <ul>
+                    <li>
+                        <span class="highlight">Modular architecture</span> -
+                        Code organized into reusable modules
+                    </li>
+                    <li>
+                        <span class="highlight">Explicit imports/exports</span>
+                        - Clear dependencies
+                    </li>
+                    <li>
+                        <span class="highlight">Encapsulation</span> -
+                        Module-scoped variables prevent pollution
+                    </li>
+                    <li>
+                        <span class="highlight">Cleaner code</span> - Better
+                        separation of concerns
+                    </li>
+                    <li>
+                        <span class="highlight">Modern standards</span> - Aligns
+                        with current JavaScript practices
+                    </li>
+                </ul>
+
+                <h2>Implementation Notes</h2>
+                <p>Key aspects of the ESM conversion:</p>
+
+                <ol>
+                    <li>
+                        <span class="highlight">Module exports</span> - The
+                        functionality is exported as a named function
+                    </li>
+                    <li>
+                        <span class="highlight">Cleanup function</span> -
+                        Returns a function to remove event listeners
+                    </li>
+                    <li>
+                        <span class="highlight">DOMContentLoaded</span> -
+                        Ensures DOM is ready before initialization
+                    </li>
+                    <li>
+                        <span class="highlight">Error handling</span> - Checks
+                        if header element exists
+                    </li>
+                    <li>
+                        <span class="highlight">Passive listeners</span> -
+                        Maintains scroll performance
+                    </li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="scroll-indicator">
+            <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+            >
+                <path d="M12 5v14M5 12l7 7 7-7"></path>
+            </svg>
+            Scroll to see the effect
+        </div>
+
+        <!-- ESM Implementation -->
+        <script type="module">
+            // Main entry point (ESM)
+            const initHideOnScroll = (id) => {
+                const header = document.getElementById(id);
+                if (!header) return null;
+
+                let lastScrollY = window.scrollY;
+                const scrollThreshold = 10;
+
+                const handleScroll = () => {
+                    const currentScrollY = window.scrollY;
+
+                    // At top of page - always show header
+                    if (currentScrollY <= 0) {
+                        header.classList.remove("header--hidden");
+                        lastScrollY = currentScrollY;
+                        return;
+                    }
+
+                    // Determine scroll direction
+                    const scrollingDown = currentScrollY > lastScrollY;
+
+                    // When scrolling down past threshold - hide header
+                    if (scrollingDown && currentScrollY > scrollThreshold) {
+                        header.classList.add("header--hidden");
+                    }
+                    // When scrolling up - show header
+                    else if (!scrollingDown) {
+                        header.classList.remove("header--hidden");
+                    }
+
+                    // Update last scroll position
+                    lastScrollY = currentScrollY;
+                };
+
+                window.addEventListener("scroll", handleScroll, {
+                    passive: true,
+                });
+
+                // Return cleanup function
+                return () => {
+                    window.removeEventListener("scroll", handleScroll);
+                };
+            };
+
+            // Initialize when DOM is ready
+            document.addEventListener("DOMContentLoaded", () => {
+                const cleanup = initHideOnScroll("main-header");
+
+                // Optional: Clean up event listeners when needed
+                // window.addEventListener('beforeunload', () => {
+                //     if (cleanup) cleanup();
+                // });
+            });
+        </script>
+    </body>
+</html>
